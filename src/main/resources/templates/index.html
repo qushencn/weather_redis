@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+
+<script type="text/javascript">
+$(function(){
+	
+	var cities;
+
+	$.get("cities.json",function(data){
+		console.log(data);
+		cities=data;
+		
+		for(var i=0;i<data.result.length;i++){
+			var option=new Option(data.result[i].province,data.result[i].id);
+			$("#province").append(option);
+		}
+	},"json");
+	
+	
+	$("#province").change(function(){
+		$("#city")[0].length=1;
+		var pid=this.value;
+		for(var i=0;i<cities.result.length;i++){
+			  if(cities.result[i].id==pid){
+				var citys=cities.result[i].city;
+				console.log("city:"+citys);
+				for(var j=0;j<citys.length;j++){
+					var option=new Option(citys[j].city,city[j].id);
+					$("#city").append(option);
+				}
+			}
+		}
+		
+	});
+	
+	$("#btnQuery").on("click",function(){
+		
+		var city=$("#city :selected").html();
+
+		var city1={"city":city}
+		
+		$.post("test",city1,function(data){
+			$("#info").empty();
+			//判断是否查询到数据
+			if(data==null){
+				$("#info").html("亲，未找到相关数据哦！");
+				return;
+			}
+
+			$("#info").append(data.result.today.dressing_advice);
+			$("#city1").append(data.result.today.city);
+
+		},"json");
+		
+
+	   });
+	
+})
+
+</script>
+
+</head>
+<body>
+          
+           省份:<select id="province">
+              <option>--选择省份--</option>
+           </select>
+            城市:<select id="city">
+              <option>--选择城市--</option>
+           </select>
+      <input type="button" value="查询" id="btnQuery"><br/>
+      
+    城市：  <div id="city1" style="color:red"></div>
+      穿衣指数：<div id="info" style="color:red"></div>
+
+ 
+</body>
+</html>
